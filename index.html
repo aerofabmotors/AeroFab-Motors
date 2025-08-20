@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AeroFab Motors — 3D Printed Cars, Planes & Prototypes</title>
+<meta name="description" content="AeroFab Motors builds precision 3D-printed cars, aircraft models, and rapid prototypes with showroom-grade finishing." />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+/* =========================
+   RESET + BASE
+   ========================= */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Outfit', system-ui, -apple-system, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+  color: #e9f4ff;
+  background: radial-gradient(1400px 600px at 10% 10%, #02111c, #000814 40%, #001d3d 80%);
+  overflow-x: hidden;
+}
+
+:root{
+  --primary:#00a8ff;
+  --accent:#7df9ff;
+  --glow:#00d1ff;
+  --ink:#0a0f1a;
+  --glass: rgba(255,255,255,0.08);
+  --glass-2: rgba(0,168,255,0.12);
+  --card: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.14);
+  --shadow: rgba(0,0,0,0.55);
+}
+
+/* =========================
+   UTILS
+   ========================= */
+.container{ width: min(1200px, 92vw); margin: 0 auto; }
+.grid{ display:grid; gap: 1.5rem; }
+.section{ padding: clamp(64px, 8vw, 120px) 0; position: relative; }
+.section-title{
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  letter-spacing: 0.02em;
+  margin-bottom: 1.25rem;
+  text-shadow: 0 0 18px rgba(0,168,255,.4);
+}
+.section-sub{
+  color: #bcd8f2; opacity:.9; margin-bottom: 2.5rem; max-width: 60ch;
+}
+
+/* Glass card */
+.card{
+  background: linear-gradient(180deg, var(--glass), var(--card));
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.03);
+  backdrop-filter: blur(8px);
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex; align-items:center; gap:.6rem; cursor:pointer;
+  background: linear-gradient(135deg, var(--primary), #0066ff);
+  border: 0; color: white; padding: .9rem 1.2rem; border-radius: 12px;
+  font-weight: 700; letter-spacing:.02em; text-decoration:none;
+  box-shadow: 0 10px 30px rgba(0,168,255,.25);
+  transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+}
+.btn:hover{ transform: translateY(-1px); filter: brightness(1.07); box-shadow: 0 18px 45px rgba(0,168,255,.35); }
+.btn.ghost{
+  background: transparent; border:1px solid var(--primary); color: var(--accent);
+  box-shadow: none;
+}
+.badge{
+  display:inline-block; font-weight:700; font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;
+  color:#a6eaff; background: linear-gradient(135deg, var(--glass-2), transparent);
+  border:1px solid rgba(125,249,255,.25);
+  padding:.4rem .7rem; border-radius:999px; margin-bottom: .9rem;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+header{
+  position: fixed; inset:0 auto auto 0; width:100%;
+  z-index: 50; backdrop-filter: blur(8px);
+  background: linear-gradient(180deg, rgba(0,8,20,0.8), rgba(0,8,20,0.35));
+  border-bottom: 1px solid var(--border);
+}
+.nav{
+  display:flex; align-items:center; justify-content:space-between; padding: .9rem 1rem;
+}
+.brand{ display:flex; align-items:center; gap:.8rem; font-weight:800; letter-spacing:.02em; }
+.brand img{ width:46px; height:46px; border-radius:10px; border:1px solid var(--border); }
+.brand span{ font-size:1.05rem; }
+nav a{
+  color:#dff4ff; text-decoration:none; margin: 0 .7rem; font-weight:600; opacity:.9;
+  padding:.5rem .7rem; border-radius:10px; border:1px solid transparent;
+}
+nav a:hover, nav a:focus{ border-color: rgba(125,249,255,.3); outline: none; }
+
+/* =========================
+   HERO
+   ========================= */
+.hero{
+  min-height: 100vh;
+  display:grid; place-items:center; position:relative; overflow:hidden;
+}
+.hero .bg{
+  position:absolute; inset:-10% -10% -10% -10%;
+  background:
+    radial-gradient(1200px 500px at 10% 0%, rgba(0,168,255,.25), transparent 60%),
+    radial-gradient(1400px 700px at 90% 30%, rgba(0,60,255,.2), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.25), transparent 45%);
+  filter: blur(30px) saturate(1.2);
+  z-index:0;
+}
+.hero .orb{
+  position:absolute; width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(0,216,255,0.75), rgba(0,62,255,.35) 40%, transparent 60%);
+  animation: float 22s ease-in-out infinite;
+  mix-blend-mode: screen; opacity:.25; pointer-events:none;
+}
+.hero .orb.o2{ width: 420px; height:420px; left:10%; top:35%; animation-duration: 18s; }
+.hero .orb.o3{ width: 540px; height:540px; right:5%; top:10%; animation-duration: 26s; }
+@keyframes float{
+  0%,100%{ transform: translateY(-10px) translateX(0) rotate(0deg); }
+  50%{ transform: translateY(20px) translateX(10px) rotate(6deg); }
+}
+
+.hero-wrap{
+  position:relative; z-index:5; text-align:center; padding-top: 80px;
+}
+.hero h1{
+  font-size: clamp(2.2rem, 5.8vw, 5rem);
+  line-height: 1.02; margin-bottom: .75rem;
+  text-shadow: 0 0 30px rgba(0,168,255,.35);
+}
+.hero p{
+  color:#cfeaff; font-size: clamp(1rem, 2.7vw, 1.3rem); opacity:.95; max-width: 68ch; margin: 0 auto 1.2rem;
+}
+.hero .cta{ display:flex; gap: .9rem; justify-content:center; margin-top:1rem; flex-wrap: wrap; }
+
+.hero-marquee{
+  margin-top: 36px; overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+}
+.marquee-track{
+  display:flex; gap: 2.5rem; padding: .9rem 0; white-space: nowrap; will-change: transform;
+  animation: marquee 22s linear infinite;
+}
+.marquee-item{ opacity:.8; letter-spacing:.12em; font-weight:600; font-size:.9rem; color:#b8e9ff; text-transform: uppercase; }
+@keyframes marquee { from{ transform: translateX(0); } to{ transform: translateX(-50%); } }
+
+/* =========================
+   HIGHLIGHTS / STATS
+   ========================= */
+.stats{
+  display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem;
+}
+.stat{
+  text-align:center; padding: 1.2rem; border-radius: 14px;
+  background: linear-gradient(180deg, var(--glass), transparent);
+  border:1px solid var(--border);
+}
+.stat .num{ font-size: clamp(1.7rem, 3.2vw, 2.4rem); font-weight: 800; color: var(--accent); text-shadow: 0 0 20px rgba(125,249,255,.35); }
+.stat small{ color:#b6d9ff; opacity:.9; display:block; margin-top:.35rem; }
+
+/* =========================
+   SERVICES
+   ========================= */
+.services{ grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.service{
+  padding: 1.2rem; position:relative; overflow:hidden;
+}
+.service .icon{
+  font-size: 2rem; margin-bottom:.6rem; filter: drop-shadow(0 8px 25px rgba(0,168,255,.35));
+}
+.service h3{ font-size: 1.2rem; margin-bottom:.2rem; }
+.service p{ color:#cfeaff; opacity:.92; }
+
+/* =========================
+   SHOWCASE / GALLERY
+   ========================= */
+.showcase-grid{ grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.tile{
+  position:relative; overflow:hidden; aspect-ratio: 16/10; border-radius: 16px;
+  border:1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,168,255,.03));
+}
+.tile img{ width:100%; height:100%; object-fit: cover; filter: saturate(1.1) contrast(1.02); opacity:.94; transition: transform .5s ease; }
+.tile .label{
+  position:absolute; inset:auto 0 0 0; padding: .8rem 1rem; background: linear-gradient(180deg, transparent, rgba(0,0,0,.55));
+  display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+}
+.tile:hover img{ transform: scale(1.05); }
+
+/* =========================
+   TIMELINE
+   ========================= */
+.timeline{
+  position:relative; margin-top: 1rem;
+}
+.timeline:before{
+  content:""; position:absolute; left: 12px; top:0; bottom:0; width: 2px; background: linear-gradient(180deg, var(--accent), transparent);
+  filter: drop-shadow(0 8px 25px rgba(125,249,255,.35));
+}
+.milestone{
+  position:relative; padding-left: 2.4rem; margin: 1.2rem 0;
+}
+.milestone:before{
+  content:""; position:absolute; left: 6px; top:.3rem; width:14px; height:14px; border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, var(--accent), #007bff);
+  box-shadow: 0 0 22px rgba(0,168,255,.7);
+}
+
+/* =========================
+   TESTIMONIALS (fade carousel)
+   ========================= */
+.testimonials{ overflow:hidden; }
+.quote-stage{
+  position:relative; height: 170px; margin-top:.6rem;
+}
+.qu{
+  position:absolute; inset:0 auto auto 0; width:100%; opacity:0; transform: translateY(6px) scale(.98);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.qu.active{ opacity:1; transform: translateY(0) scale(1); }
+.qu p{ color:#eaf6ff; opacity:.96; }
+.qu .who{ color:#b6d9ff; opacity:.85; font-weight:600; margin-top:.4rem; }
+
+/* =========================
+   FAQ
+   ========================= */
+.faq{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+.faq .q{
+  padding: 1rem 1.1rem; border-radius:14px; border:1px solid var(--border); cursor: pointer;
+  background: linear-gradient(180deg, var(--glass), transparent);
+}
+.faq .q h4{ font-size:1rem; }
+.faq .q p{ color:#cfeaff; display:none; margin-top:.55rem; }
+.faq .q.open p{ display:block; }
+
+/* =========================
+   CONTACT
+   ========================= */
+.form{
+  display:grid; gap: .9rem; grid-template-columns: 1fr 1fr;
+  padding: 1.2rem; border-radius:18px;
+}
+.form label{ font-weight:600; font-size:.9rem; color:#cfeaff; opacity:.95;}
+.form input, .form textarea{
+  width:100%; padding:.9rem 1rem; border-radius:12px; background: rgba(255,255,255,.06);
+  border:1px solid var(--border); color:#e6f6ff; outline: none;
+}
+.form textarea{ grid-column: span 2; min-height: 140px; resize: vertical; }
+.form .actions{ grid-column: span 2; display:flex; gap:.7rem; align-items:center; }
+.form .hint{ font-size:.9rem; color:#aee8ff; opacity:.85; }
+.form .hp{ display:none !important; }
+.notice{ margin-top:.6rem; font-size:.95rem; }
+.notice.ok{ color:#8fffd1; }
+.notice.bad{ color:#ff9f9f; }
+
+/* =========================
+   CTA + FOOTER
+   ========================= */
+.cta{
+  text-align:center; padding: 3rem 1.2rem; border-radius: 22px;
+  border:1px solid var(--border); background: linear-gradient(180deg, rgba(0,168,255,.08), rgba(255,255,255,.04));
+}
+footer{
+  border-top:1px solid var(--border); padding: 32px 0; color:#cfeaff; text-align:center;
+  background: linear-gradient(180deg, rgba(0,8,20,0.6), rgba(0,8,20,0.9));
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 960px){
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .faq { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px){
+  nav .hide-mobile{ display:none; }
+  .quote-stage{ height: 220px; }
+}
+
+/* =========================
+   REVEAL ANIMATIONS
+   ========================= */
+.reveal{ opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.show{ opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ======================= HEADER ======================= -->
+<header>
+  <div class="container nav" role="navigation" aria-label="Primary">
+    <a class="brand" href="#home" aria-label="AeroFab Motors">
+      <img src="logo.png" alt="AeroFab Motors Logo">
+      <span>AeroFab Motors</span>
+    </a>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#services" class="hide-mobile">Services</a>
+      <a href="#showcase" class="hide-mobile">Showcase</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#contact">Contact</a>
+      <a class="btn ghost" href="#quote">Get a Quote</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ======================= HERO ======================= -->
+<section class="hero" id="home" aria-label="Hero">
+  <div class="bg"></div>
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+
+  <div class="hero-wrap container">
+    <span class="badge">Precision • Performance • Print</span>
+    <h1>3D‑Printed Cars & Aircraft Models with <span style="color:var(--accent)">Showroom‑Grade</span> Finish</h1>
+    <p>We fuse aerospace engineering with next‑gen additive manufacturing to deliver custom cars, plane replicas, and rapid prototypes—built layer by layer with obsessive detail.</p>
+    <div class="cta">
+      <a class="btn" href="#showcase" aria-label="View Showcase">Explore Builds</a>
+      <a class="btn ghost" href="#contact" aria-label="Contact us">Start a Project</a>
+    </div>
+
+    <div class="hero-marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span class="marquee-item">High quality</span>
+        <span class="marquee-item">Cheap and Reliable </span>
+        <span class="marquee-item">3d prints</span>
+        <span class="marquee-item">JR • JM • RC</span>
+        <span class="marquee-item">Great scaling</span>
+        <span class="marquee-item">Functional Prototypes</span>
+        <!-- looped copy to fill -->
+        <span class="marquee-item">High quality</span>
+        <span class="marquee-item">Cheap and Reliable</span>
+        <span class="marquee-item">3d prints</span>
+        <span class="marquee-item">JR • JM • RC</span>
+        <span class="marquee-item">Great scaling</span>
+        <span class="marquee-item">Functional Prototypes</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= HIGHLIGHTS / STATS ======================= -->
+<section class="section reveal" id="metrics" aria-label="Highlights">
+  <div class="container">
+    <h2 class="section-title">Trusted by Builders & Collectors</h2>
+    <p class="section-sub">From garage dreamers to aerospace labs, our models and prototypes turn ideas into touchable reality.</p>
+    <div class="stats">
+      <div class="stat card"><div class="num" data-count="3">0</div><small>Custom Models Delivered</small></div>
+      <div class="stat card"><div class="num" data-count="2">0</div><small>Race Teams Supported</small></div>
+      <div class="stat card"><div class="num" data-count="4">0</div><small>Countries Shipped</small></div>
+      <div class="stat card"><div class="num" data-count="98">0</div><small>% 5‑Star Reviews</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= ABOUT / TIMELINE ======================= -->
+<section class="section reveal" id="about" aria-label="About">
+  <div class="container">
+    <span class="badge">Our Story</span>
+    <h2 class="section-title">From Three Makers to a Global Workshop</h2>
+    <p class="section-sub">We started in 2024 making custom laster cuts of cars and planes with great success off that we have rebranded to AreoFab.</p>
+
+    <div class="timeline">
+      <div class="milestone">
+        <h3>2024 — The Start</h3>
+        <p>Term 3 week one we choose the markerspace class where we were able to make our own product and sell them for cash via the launch of Laser Desgins now AreoFab.</p>
+      </div>
+      <div class="milestone">
+        <h3>2024 — The market</h3>
+        <p>On the market night we had many issues like our co founder being "sick" and his birthday so it only was me and he had all the products but thankfully he dropped of them and we made some proffit from that.</p>
+      </div>
+      <div class="milestone">
+        <h3>2025 — The next step</h3>
+        <p>Its term 3 me and my co founder are rebranding into AeroFab with big ideas and big goals and new members we set of to make AeroFab the best modeling service ever!.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= SERVICES ======================= -->
+<section class="section reveal" id="services" aria-label="Services">
+  <div class="container">
+    <span class="badge">What We Do</span>
+    <h2 class="section-title">Design • Print • Finish • Deliver</h2>
+    <p class="section-sub">Whether you’re showcasing, testing, or racing, we plug into your idea at any fidelity—from napkin sketch to presentation‑ready model.</p>
+
+    <div class="grid services">
+      <!-- Custom 3D‑Printed Cars -->
+      <article class="service card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car-icon">
+            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+            <circle cx="7" cy="17" r="2"/>
+            <path d="M9 17h6"/>
+            <circle cx="17" cy="17" r="2"/>
+          </svg>
+        </div>
+        <h3>Custom 3D‑Printed Cars</h3>
+        <p>Parametric bodywork, snap‑fit interiors, and high‑gloss finish with paint‑matched details.</p>
+      </article>
+
+      <!-- Prototype / Development -->
+      <article class="service card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pickaxe-icon">
+            <path d="m14 13-8.381 8.38a1 1 0 0 1-3.001-3L11 9.999"/>
+            <path d="M15.973 4.027A13 13 0 0 0 5.902 2.373c-1.398.342-1.092 2.158.277 2.601a19.9 19.9 0 0 1 5.822 3.024"/>
+            <path d="M16.001 11.999a19.9 19.9 0 0 1 3.024 5.824c.444 1.369 2.26 1.676 2.603.278A13 13 0 0 0 20 8.069"/>
+            <path d="M18.352 3.352a1.205 1.205 0 0 0-1.704 0l-5.296 5.296a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l5.296-5.296a1.205 1.205 0 0 0 0-1.704z"/>
+          </svg>
+        </div>
+        <h3>Prototype Development</h3>
+        <p>Proof‑of‑concept parts, functional hinges, and testing fixtures with rapid iteration cycles.</p>
+      </article>
+
+      <!-- Aircraft Models -->
+      <article class="service card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plane-icon">
+            <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+          </svg>
+        </div>
+        <h3>Aircraft Models</h3>
+        <p>Scale jets with panel lines, rivet detail, and livery accuracy for museums and collectors.</p>
+      </article>
+
+      <!-- Race Replicas -->
+      <article class="service card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flag-icon">
+            <path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/>
+          </svg>
+        </div>
+        <h3>Race Replicas</h3>
+        <p>Track‑ready looks in scale form—decals, aero, and stance dialed to the millimeter.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ======================= SHOWCASE ======================= -->
+<section class="section reveal" id="showcase" aria-label="Showcase">
+  <div class="container">
+    <span class="badge">Recent Builds</span>
+    <h2 class="section-title">Showcase Gallery</h2>
+    <p class="section-sub">A peek at what leaves the bench. We don’t just print—we finish.</p>
+
+    <div class="grid showcase-grid">
+      <figure class="tile">
+        <img src="images/afm-car-01.jpg" alt="Gloss black 3D-printed concept car on studio turntable" loading="lazy">
+        <figcaption class="label"><span>Project Aether</span><a class="btn ghost" href="#">View</a></figcaption>
+      </figure>
+      <figure class="tile">
+        <img src="images/afm-jet-01.jpg" alt="Scale jet with matte gray body and accurate panel lines" loading="lazy">
+        <figcaption class="label"><span>Falcon MkII</span><a class="btn ghost" href="#">View</a></figcaption>
+      </figure>
+      <figure class="tile">
+        <img src="images/afm-car-02.jpg" alt="Candy red race replica with sponsor decals" loading="lazy">
+        <figcaption class="label"><span>Scarlet GT</span><a class="btn ghost" href="#">View</a></figcaption>
+      </figure>
+      <figure class="tile">
+        <img src="images/afm-jet-02.jpg" alt="Blue and white livery jet model with stand" loading="lazy">
+        <figcaption class="label"><span>Blue Arc</span><a class="btn ghost" href="#">View</a></figcaption>
+      </figure>
+      <figure class="tile">
+        <img src="images/afm-proto-01.jpg" alt="Functional prototype gearbox with clear casing" loading="lazy">
+        <figcaption class="label"><span>GearViz</span><a class="btn ghost" href="#">View</a></figcaption>
+      </figure>
+      <figure class="tile">
+        <img src="images/afm-car-03.jpg" alt="White concept with LED lightbar and carbon look mirrors" loading="lazy">
+        <figcaption class="label"><span>Polar R</span><a class="btn ghost" href="#">View</a></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials" class="testimonials fade-in">
+  <h2 class="section-title">What Our Clients Say</h2>
+  <div class="testimonial-carousel">
+    <!-- Background lines -->
+    <div class="carousel-background">
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
+
+    <div class="testimonial-track">
+      <!-- Replace these with your real reviews -->
+      <div class="testimonial"><p>Review 1</p></div>
+      <div class="testimonial"><p>Review 2</p></div>
+      <div class="testimonial"><p>Review 3</p></div>
+      <div class="testimonial"><p>Review 4</p></div>
+      <div class="testimonial"><p>Review 5</p></div>
+      <div class="testimonial"><p>Review 6</p></div>
+      <div class="testimonial"><p>Review 7</p></div>
+      <div class="testimonial"><p>Review 8</p></div>
+      <div class="testimonial"><p>Review 9</p></div>
+      <div class="testimonial"><p>Review 10</p></div>
+      <!-- add more reviews as needed -->
+    </div>
+  </div>
+</section>
+
+<style>
+.testimonial-carousel {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  background: #0e1116;
+  border-radius: 1rem;
+  padding: 2rem 1rem;
+}
+
+.testimonial-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns per row */
+  grid-template-rows: repeat(2, auto);  /* 2 rows */
+  gap: 1rem;
+  width: max-content;
+  transition: transform 0.5s linear;
+}
+
+.testimonial {
+  background: rgba(255,255,255,0.05);
+  padding: 1rem;
+  color: #fff;
+  border-radius: 0.5rem;
+  font-style: italic;
+}
+
+/* Background lines */
+.carousel-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.line {
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  background: rgba(255,255,255,0.05);
+  animation: lineMove 5s linear infinite;
+}
+
+.line:nth-child(1) { left: 25%; animation-delay: 0s; }
+.line:nth-child(2) { left: 75%; animation-delay: 2s; }
+
+@keyframes lineMove {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s forwards;
+}
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const track = document.querySelector('.testimonial-track');
+  const testimonials = Array.from(document.querySelectorAll('.testimonial'));
+  const blockSize = 8; // 8 visible (2 rows × 4 columns)
+  let index = 0;
+
+  // Duplicate testimonials for seamless infinite scrolling
+  track.innerHTML += track.innerHTML;
+  const total = testimonials.length * 2;
+
+  function moveCarousel() {
+    index += blockSize; // move 8 at a time
+    if (index >= total) {
+      track.style.transition = 'none';
+      index = 0;
+      track.style.transform = `translateX(0)`;
+      track.offsetHeight; // force reflow
+      track.style.transition = 'transform 0.5s linear';
+    } else {
+      track.style.transform = `translateX(-${index * 25}%)`; // 25% width per column
+    }
+  }
+
+  setInterval(moveCarousel, 3000);
+});
+</script>
+
+
+
+
+
+
+
+
+
+<!-- ======================= FAQ ======================= -->
+<section class="section reveal" id="faq" aria-label="FAQ">
+  <div class="container">
+    <span class="badge">FAQ</span>
+    <h2 class="section-title">You Ask, We Build</h2>
+    <div class="grid faq">
+      <div class="q">
+        <h4>How durable are the models?</h4>
+        <p>We choose materials for the job: tough resins for structure, nylon SLS for load, and multi‑material FDM for functional parts.</p>
+      </div>
+      <div class="q">
+        <h4>Do you do custom paint?</h4>
+        <p>Yes. We color‑match to codes or samples and offer gloss, satin, matte, and carbon‑look finishes.</p>
+      </div>
+      <div class="q">
+        <h4>Can you work from sketches?</h4>
+        <p>Absolutely. We lift geometry from sketches, photos, or rough CAD and iterate with you.</p>
+      </div>
+      <div class="q">
+        <h4>Shipping & lead times?</h4>
+        <p>Typical builds ship 2–6 weeks depending on complexity and finishing. Rush options available.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= CONTACT (Discord Webhook) ======================= -->
+<section class="section reveal" id="contact" aria-label="Contact">
+  <div class="container">
+    <span class="badge">Start a Project</span>
+    <h2 class="section-title">Tell Us What You’re Building</h2>
+    <p class="section-sub">Drop a note below. We’ll get back with scope & a clear quote. The form sends straight to us.</p>
+
+    <form id="afmForm" class="form card" autocomplete="on" novalidate>
+      <div style="grid-column: span 2;" class="hp">
+        <!-- Honeypot for bots -->
+        <label>Leave this field empty<input type="text" name="company"></label>
+      </div>
+
+      <div>
+        <label for="name">Your Name</label>
+        <input id="name" name="name" type="text" inputmode="text" placeholder="Braxton Builder" required>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" inputmode="email" placeholder="you@example.com" required>
+      </div>
+
+      <div>
+        <label for="budget">Rough Budget (optional)</label>
+        <input id="budget" name="budget" type="text" inputmode="numeric" placeholder="$2k–$10k">
+      </div>
+      <div>
+        <label for="type">Build Type</label>
+        <input id="type" name="type" type="text" placeholder="Car • Jet • Prototype">
+      </div>
+
+      <label for="message" style="grid-column: span 2;">Message</label>
+      <textarea id="message" name="message" placeholder="Tell us about scale, finish, deadline…" required></textarea>
+
+      <div class="actions">
+        <button class="btn" type="submit" id="submitBtn">Sent to us</button>
+        <span class="hint">We’ll ping the workshop right away.</span>
+      </div>
+      <div id="formNotice" class="notice" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ======================= CTA ======================= -->
+<section class="section reveal" id="quote" aria-label="Quote">
+  <div class="container">
+    <div class="cta card">
+      <h2 class="section-title">Ready to Build Something Unreal?</h2>
+      <p class="section-sub">From a single hero model to a full prototype run—we’ve got the printers warmed up.</p>
+      <a class="btn" href="#contact" aria-label="Contact AeroFab Motors">Start Your Quote</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FOOTER ======================= -->
+<footer>
+  <div class="container">
+    <p>&copy; 2025 AeroFab Motors. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ======================= SCRIPTS ======================= -->
+<script>
+/* ============================================================
+   1) Smooth anchor + keyboard nav focus
+   ============================================================ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if(el){
+      e.preventDefault();
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+      history.pushState(null, '', '#'+id);
+      // focus next heading for accessibility
+      const h = el.querySelector('h1,h2,h3,h4'); if(h) h.setAttribute('tabindex','-1'), h.focus();
+    }
+  });
+});
+
+/* ============================================================
+   2) Reveal on scroll
+   ============================================================ */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('show');
+      io.unobserve(entry.target);
+    }
+  });
+},{threshold: .18});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ============================================================
+   3) Count-up stats
+   ============================================================ */
+const counters = document.querySelectorAll('.num');
+const counterIO = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = +el.getAttribute('data-count');
+    let cur = 0, step = Math.ceil(target/48);
+    const t = setInterval(()=>{
+      cur += step;
+      if(cur >= target){ cur = target; clearInterval(t); }
+      el.textContent = cur + (target===98?'%':'');
+    }, 28);
+    counterIO.unobserve(el);
+  });
+},{threshold:.6});
+counters.forEach(c=>counterIO.observe(c));
+
+/* ============================================================
+   4) Testimonials fade carousel
+   ============================================================ */
+const quotes = [...document.querySelectorAll('.quote-stage .qu')];
+let qIdx = 0;
+setInterval(()=>{
+  quotes[qIdx].classList.remove('active');
+  qIdx = (qIdx + 1) % quotes.length;
+  quotes[qIdx].classList.add('active');
+}, 3200);
+
+/* ============================================================
+   5) FAQ toggles
+   ============================================================ */
+document.querySelectorAll('.faq .q').forEach(q=>{
+  q.addEventListener('click', ()=> q.classList.toggle('open'));
+});
+
+/* ============================================================
+   6) CONTACT: Submit to Discord Webhook
+      - Uses mode: 'no-cors' + Content-Type: text/plain to avoid preflight.
+      - Sends JSON string in body; Discord accepts it.
+   ============================================================ */
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1324332687271526502/T6rZtY4DphRjgMPrXyYyvMdGH5t9olc8bEaB6mBUEJAkqYQV2iMrfwNkVtPufaUx2D_P'; // <-- replace with your actual webhook URL
+
+function sanitize(s){ return String(s||'').trim().slice(0, 4000); }
+
+const form = document.getElementById('afmForm');
+const notice = document.getElementById('formNotice');
+const submitBtn = document.getElementById('submitBtn');
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+
+  // Honeypot
+  if(form.company && form.company.value) return;
+
+  // Simple client rate-limit (10s)
+  const last = +localStorage.getItem('afm_last_submit') || 0;
+  if(Date.now() - last < 10000){
+    showNotice('Please wait a few seconds before sending again.', false);
+    return;
+  }
+
+  const name = sanitize(form.name.value);
+  const email = sanitize(form.email.value);
+  const budget = sanitize(form.budget.value);
+  const type = sanitize(form.type.value);
+  const message = sanitize(form.message.value);
+
+  if(!name || !email || !message){
+    showNotice('Name, email, and message are required.', false);
+    return;
+  }
+
+  const embed = {
+    username: "AeroFab Contact",
+    avatar_url: "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/autosar.svg",
+    content: `📩 **New Inquiry**`,
+    embeds: [{
+      title: "Project Inquiry",
+      color: 3753492,
+      fields: [
+        { name: "Name", value: name, inline: true },
+        { name: "Email", value: email, inline: true },
+        { name: "Build Type", value: type || "—", inline: true },
+        { name: "Budget", value: budget || "—", inline: true },
+        { name: "Message", value: message || "—", inline: false }
+      ],
+      footer: { text: "AeroFab Motors — Web Form" },
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  submitBtn.disabled = true; submitBtn.textContent = 'Sending…';
+  showNotice('Sending to the workshop…', true);
+
+  try{
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(embed)
+    });
+    // We can’t read response in no-cors mode, so assume success.
+    localStorage.setItem('afm_last_submit', Date.now());
+    form.reset();
+    showNotice('Sent! We’ll get back to you shortly. Check your inbox.', true);
+  }catch(err){
+    console.error(err);
+    showNotice('Could not send right now. Please try again later.', false);
+  }finally{
+    submitBtn.disabled = false; submitBtn.textContent = 'Send to Discord';
+  }
+});
+
+function showNotice(msg, ok){
+  notice.textContent = msg;
+  notice.classList.toggle('ok', !!ok);
+  notice.classList.toggle('bad', !ok);
+}
+
+/* ============================================================
+   7) Fun: keyboard shortcut (press "G" for glow pulse)
+   ============================================================ */
+let glow = false;
+addEventListener('keydown', (e)=>{
+  if(e.key.toLowerCase()==='g'){
+    glow = !glow;
+    document.body.style.boxShadow = glow ? 'inset 0 0 120px rgba(0,168,255,.15)' : 'none';
+  }
+});
+</script>
+</body>
+</html>
+
