@@ -770,89 +770,117 @@ document.querySelectorAll('.faq .q').forEach(q=>{
   q.addEventListener('click', ()=> q.classList.toggle('open'));
 });
 
-/* ============================================================
-   6) CONTACT: Submit to Discord Webhook
-      - Uses mode: 'no-cors' + Content-Type: text/plain to avoid preflight.
-      - Sends JSON string in body; Discord accepts it.
-   ============================================================ */
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1324332687271526502/T6rZtY4DphRjgMPrXyYyvMdGH5t9olc8bEaB6mBUEJAkqYQV2iMrfwNkVtPufaUx2D_P'; // <-- replace with your actual webhook URL
+"use client";
 
-function sanitize(s){ return String(s||'').trim().slice(0, 4000); }
+import { useState } from "react";
 
-const form = document.getElementById('afmForm');
-const notice = document.getElementById('formNotice');
-const submitBtn = document.getElementById('submitBtn');
+export default function Home() {
+  const [notice, setNotice] = useState<string | null>(null);
+  const [ok, setOk] = useState<boolean>(false);
+  const [sending, setSending] = useState(false);
 
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
 
-  // Honeypot
-  if(form.company && form.company.value) return;
+    const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const budget = String(formData.get("budget") || "").trim();
+    const type = String(formData.get("type") || "").trim();
+    const message = String(formData.get("message") || "").trim();
 
-  // Simple client rate-limit (10s)
-  const last = +localStorage.getItem('afm_last_submit') || 0;
-  if(Date.now() - last < 10000){
-    showNotice('Please wait a few seconds before sending again.', false);
-    return;
+    if (!name || !email || !message) {
+      setNotice("Name, email, and message are required.");
+      setOk(false);
+      return;
+    }
+
+    setSending(true);
+    setNotice("Sending to the workshop…");
+    setOk(true);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, budget, type, message }),
+      });
+
+      if (res.ok) {
+        setNotice("Sent! We’ll get back to you shortly.");
+        setOk(true);
+        form.reset();
+      } else {
+        setNotice("Could not send right now. Please try again later.");
+        setOk(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setNotice("Network error. Try again later.");
+      setOk(false);
+    } finally {
+      setSending(false);
+    }
   }
 
-  const name = sanitize(form.name.value);
-  const email = sanitize(form.email.value);
-  const budget = sanitize(form.budget.value);
-  const type = sanitize(form.type.value);
-  const message = sanitize(form.message.value);
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-8">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-white p-6 rounded-2xl shadow-lg flex flex-col gap-4"
+      >
+        <h1 className="text-xl font-bold">Contact AeroFab Motors</h1>
 
-  if(!name || !email || !message){
-    showNotice('Name, email, and message are required.', false);
-    return;
-  }
+        <input
+          name="name"
+          placeholder="Your Name"
+          className="border rounded p-2"
+          required
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="Your Email"
+          className="border rounded p-2"
+          required
+        />
+        <input
+          name="budget"
+          placeholder="Budget (optional)"
+          className="border rounded p-2"
+        />
+        <input
+          name="type"
+          placeholder="Build Type (optional)"
+          className="border rounded p-2"
+        />
+        <textarea
+          name="message"
+          placeholder="Your Message"
+          className="border rounded p-2"
+          rows={4}
+          required
+        />
 
-  const embed = {
-    username: "AeroFab Contact",
-    avatar_url: "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/autosar.svg",
-    content: `📩 **New Inquiry**`,
-    embeds: [{
-      title: "Project Inquiry",
-      color: 3753492,
-      fields: [
-        { name: "Name", value: name, inline: true },
-        { name: "Email", value: email, inline: true },
-        { name: "Build Type", value: type || "—", inline: true },
-        { name: "Budget", value: budget || "—", inline: true },
-        { name: "Message", value: message || "—", inline: false }
-      ],
-      footer: { text: "AeroFab Motors — Web Form" },
-      timestamp: new Date().toISOString()
-    }]
-  };
+        <button
+          type="submit"
+          disabled={sending}
+          className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700 disabled:opacity-50"
+        >
+          {sending ? "Sending…" : "Send to Discord"}
+        </button>
 
-  submitBtn.disabled = true; submitBtn.textContent = 'Sending…';
-  showNotice('Sending to the workshop…', true);
-
-  try{
-    await fetch(DISCORD_WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(embed)
-    });
-    // We can’t read response in no-cors mode, so assume success.
-    localStorage.setItem('afm_last_submit', Date.now());
-    form.reset();
-    showNotice('Sent! We’ll get back to you shortly. Check your inbox.', true);
-  }catch(err){
-    console.error(err);
-    showNotice('Could not send right now. Please try again later.', false);
-  }finally{
-    submitBtn.disabled = false; submitBtn.textContent = 'Send to Discord';
-  }
-});
-
-function showNotice(msg, ok){
-  notice.textContent = msg;
-  notice.classList.toggle('ok', !!ok);
-  notice.classList.toggle('bad', !ok);
+        {notice && (
+          <p className={`text-sm ${ok ? "text-green-600" : "text-red-600"}`}>
+            {notice}
+          </p>
+        )}
+      </form>
+    </div>
+  );
 }
+
 
 /* ============================================================
    7) Fun: keyboard shortcut (press "G" for glow pulse)
@@ -867,5 +895,6 @@ addEventListener('keydown', (e)=>{
 </script>
 </body>
 </html>
+
 
 
